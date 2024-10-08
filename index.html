@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Responsive Quiz App</title>
+    <style>
+        :root {
+            --primary-color: #3498db;
+            --secondary-color: #2c3e50;
+            --danger-color: #e74c3c;
+            --background-color: #f4f4f4;
+            --card-background: #ffffff;
+        }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: var(--secondary-color);
+            background-color: var(--background-color);
+            padding: 20px;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: var(--card-background);
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        .logo {
+            display: block;
+            margin: 0 auto 20px;
+            max-width: 200px;
+            width: 100%;
+            border-radius: 8px;
+        }
+        h1, h2 {
+            color: var(--secondary-color);
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input[type="text"], select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+        .btn {
+            display: inline-block;
+            background-color: var(--primary-color);
+            color: #fff;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s ease;
+        }
+        .btn:hover {
+            background-color: #2980b9;
+        }
+        .btn:disabled {
+            background-color: #bdc3c7;
+            cursor: not-allowed;
+        }
+        .btn-danger {
+            background-color: var(--danger-color);
+        }
+        .btn-danger:hover {
+            background-color: #c0392b;
+        }
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        li {
+            background-color: #ecf0f1;
+            margin-bottom: 10px;
+            padding: 15px;
+            border-radius: 4px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .quiz-option {
+            display: block;
+            background-color: #ecf0f1;
+            margin-bottom: 10px;
+            padding: 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        .quiz-option:hover {
+            background-color: #d5dbdb;
+        }
+        .quiz-option.selected {
+            background-color: var(--primary-color);
+            color: #fff;
+        }
+        #quiz-result {
+            font-weight: bold;
+            margin-top: 20px;
+            text-align: center;
+            font-size: 18px;
+        }
+        .hidden {
+            display: none;
+        }
+        .button-group {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+        @media (max-width: 600px) {
+            .container {
+                padding: 10px;
+            }
+            .btn {
+                width: 100%;
+                margin-bottom: 10px;
+            }
+            li {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            li button {
+                margin-top: 10px;
+                width: 100%;
+            }
+            .button-group {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <img src="https://www.creativefabrica.com/wp-content/uploads/2022/06/08/Quiz-time-logo-with-clock-concept-Graphics-31976124-1.jpg" alt="Quiz Time Logo" class="logo">
+        <h1>Responsive Quiz App</h1>
+        <div id="quiz-creator">
+            <h2>Create a New Question</h2>
+            <form id="question-form">
+                <div class="form-group">
+                    <label for="question">Question:</label>
+                    <input type="text" id="question" required>
+                </div>
+                <div class="form-group">
+                    <label for="option1">Option 1:</label>
+                    <input type="text" id="option1" required>
+                </div>
+                <div class="form-group">
+                    <label for="option2">Option 2:</label>
+                    <input type="text" id="option2" required>
+                </div>
+                <div class="form-group">
+                    <label for="option3">Option 3:</label>
+                    <input type="text" id="option3" required>
+                </div>
+                <div class="form-group">
+                    <label for="option4">Option 4:</label>
+                    <input type="text" id="option4" required>
+                </div>
+                <div class="form-group">
+                    <label for="correct-answer">Correct Answer:</label>
+                    <select id="correct-answer" required>
+                        <option value="">Select correct answer</option>
+                        <option value="0">Option 1</option>
+                        <option value="1">Option 2</option>
+                        <option value="2">Option 3</option>
+                        <option value="3">Option 4</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn">Add Question</button>
+            </form>
+        </div>
+        <div id="question-list" class="hidden">
+            <h2>Your Questions</h2>
+            <ul id="questions"></ul>
+            <div class="button-group">
+                <button id="start-quiz" class="btn">Start Quiz</button>
+                <button id="clear-questions" class="btn btn-danger">Remove All Questions</button>
+            </div>
+        </div>
+        <div id="quiz-section" class="hidden">
+            <h2>Quiz Time!</h2>
+            <div id="quiz-question"></div>
+            <div id="quiz-options"></div>
+            <button id="submit-answer" class="btn" disabled>Submit Answer</button>
+            <div id="quiz-result"></div>
+        </div>
+    </div>
+
+    <script>
+        let questions = [];
+        let currentQuestion = 0;
+        let score = 0;
+        let selectedAnswer = null;
+
+        const quizCreator = document.getElementById('quiz-creator');
+        const questionForm = document.getElementById('question-form');
+        const questionList = document.getElementById('question-list');
+        const questionsList = document.getElementById('questions');
+        const startQuizBtn = document.getElementById('start-quiz');
+        const clearQuestionsBtn = document.getElementById('clear-questions');
+        const quizSection = document.getElementById('quiz-section');
+        const quizQuestion = document.getElementById('quiz-question');
+        const quizOptions = document.getElementById('quiz-options');
+        const submitAnswerBtn = document.getElementById('submit-answer');
+        const quizResult = document.getElementById('quiz-result');
+
+        questionForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const question = document.getElementById('question').value;
+            const options = [
+                document.getElementById('option1').value,
+                document.getElementById('option2').value,
+                document.getElementById('option3').value,
+                document.getElementById('option4').value
+            ];
+            const correctAnswer = parseInt(document.getElementById('correct-answer').value);
+
+            questions.push({ question, options, correctAnswer });
+            updateQuestionList();
+            questionForm.reset();
+        });
+
+        function updateQuestionList() {
+            questionsList.innerHTML = '';
+            questions.forEach((q, index) => {
+                const li = document.createElement('li');
+                li.innerHTML = `
+                    <span>Question ${index + 1}: ${q.question}</span>
+                    <button class="btn btn-danger remove-question" data-index="${index}">Remove</button>
+                `;
+                questionsList.appendChild(li);
+            });
+
+            if (questions.length > 0) {
+                questionList.classList.remove('hidden');
+            } else {
+                questionList.classList.add('hidden');
+            }
+
+            document.querySelectorAll('.remove-question').forEach(button => {
+                button.addEventListener('click', removeQuestion);
+            });
+        }
+
+        function removeQuestion(e) {
+            const index = parseInt(e.target.dataset.index);
+            questions.splice(index, 1);
+            updateQuestionList();
+        }
+
+        clearQuestionsBtn.addEventListener('click', () => {
+            questions = [];
+            updateQuestionList();
+        });
+
+        startQuizBtn.addEventListener('click', startQuiz);
+
+        function startQuiz() {
+            currentQuestion = 0;
+            score = 0;
+            quizCreator.classList.add('hidden');
+            questionList.classList.add('hidden');
+            quizSection.classList.remove('hidden');
+            showQuestion();
+        }
+
+        function showQuestion() {
+            const q = questions[currentQuestion];
+            quizQuestion.textContent = q.question;
+            quizOptions.innerHTML = '';
+            q.options.forEach((option, index) => {
+                const optionElement = document.createElement('div');
+                optionElement.className = 'quiz-option';
+                optionElement.textContent = option;
+                optionElement.dataset.index = index;
+                optionElement.addEventListener('click', selectAnswer);
+                quizOptions.appendChild(optionElement);
+            });
+            submitAnswerBtn.disabled = true;
+            quizResult.textContent = '';
+            selectedAnswer = null;
+        }
+
+        function selectAnswer(e) {
+            const options = quizOptions.querySelectorAll('.quiz-option');
+            options.forEach(option => option.classList.remove('selected'));
+            e.target.classList.add('selected');
+            selectedAnswer = parseInt(e.target.dataset.index);
+            submitAnswerBtn.disabled = false;
+        }
+
+        submitAnswerBtn.addEventListener('click', submitAnswer);
+
+        function submitAnswer() {
+            if (selectedAnswer === null) return;
+
+            const correctAnswer = questions[currentQuestion].correctAnswer;
+            if (selectedAnswer === correctAnswer) {
+                score++;
+                quizResult.textContent = 'Correct!';
+                quizResult.style.color = 'green';
+            } else {
+                quizResult.textContent = 'Incorrect. The correct answer was: ' + questions[currentQuestion].options[correctAnswer];
+                quizResult.style.color = 'red';
+            }
+
+            currentQuestion++;
+            if (currentQuestion < questions.length) {
+                setTimeout(showQuestion, 2000);
+            } else {
+                setTimeout(showFinalResult, 2000);
+            }
+            submitAnswerBtn.disabled = true;
+        }
+
+        function showFinalResult() {
+            quizQuestion.textContent = 'Quiz completed!';
+            quizOptions.innerHTML = `
+                <p>Your score: ${score} out of ${questions.length}</p>
+                <button id="restart-quiz" class="btn">Restart Quiz</button>
+            `;
+            quizResult.textContent = '';
+            document.getElementById('restart-quiz').addEventListener('click', () => {
+                quizCreator.classList.remove('hidden');
+                questionList.classList.remove('hidden');
+                quizSection.classList.add('hidden');
+            });
+        }
+    </script>
+</body>
+</html>
+
+
+
+
+
